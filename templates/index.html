@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sign Language Translator</title>
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #FF6584;
+            --success: #00D9A5;
+            --dark: #1a1a2e;
+            --light: #ffffff;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            background: #16213e;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+            transform: scaleX(-1);
+        }
+
+        canvas {
+            display: none;
+        }
+
+        /* ========== BUTTONS SECTION ========== */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            position: relative;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00D9A5 0%, #00B887 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 217, 165, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #FF6584 0%, #E63950 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 101, 132, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #4A5568 0%, #2D3748 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(74, 85, 104, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Icon Buttons */
+        .btn-icon {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        /* Toggle Button Specific */
+        .btn-toggle {
+            position: relative;
+            background: #2D3748;
+        }
+
+        .btn-toggle.active {
+            background: linear-gradient(135deg, #00D9A5 0%, #00B887 100%);
+        }
+
+        /* Pulse Animation */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(102, 126, 234, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+            }
+        }
+
+        .btn-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* ========== OUTPUT BOX ========== */
+        .output-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--gradient);
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .output-box:hover {
+            transform: translateY(-2px);
+        }
+
+        .output-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        #prediction {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+            min-height: 3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ========== GUIDES ========== */
+        .guides {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            width: 100%;
+            max-width: 640px;
+        }
+
+        .guide-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .guide-item:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        /* Recording Indicator */
+        .recording {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #FF6584;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .recording.active {
+            display: flex;
+        }
+
+        .rec-dot {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        /* Snapshot Flash Effect */
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+
+        .flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .flash.active {
+            animation: flash 0.3s ease-out;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>✋ Sign Language Translator</h1>
+    <p>Show your hand to the camera</p>
+
+    <div class="container">
+        <div class="video-wrapper">
+            <div class="recording" id="recordingIndicator">
+                <div class="rec-dot"></div>
+                LIVE
+            </div>
+            <div class="flash" id="flashEffect"></div>
+            <video id="videoElement" autoplay playsinline></video>
+        </div>
+        <canvas id="canvasElement"></canvas>
+
+        <!-- STYLISH BUTTONS -->
+        <div class="controls">
+            <button class="btn btn-primary btn-pulse" id="startBtn" onclick="toggleCamera()">
+                <span>▶ Start</span>
+            </button>
+            <button class="btn btn-danger" id="stopBtn" onclick="toggleCamera()" style="display:none;">
+                <span>⏹ Stop</span>
+            </button>
+            <button class="btn btn-success" onclick="captureSnapshot()">
+                <span>📸 Capture</span>
+            </button>
+            <button class="btn btn-secondary" onclick="toggleMirror()">
+                <span>🔄 Mirror</span>
+            </button>
+            <button class="btn btn-secondary" onclick="clearPrediction()">
+                <span>🗑 Clear</span>
+            </button>
+        </div>
+
+        <!-- Icon Buttons (Alternative Design) -->
+        <div class="controls">
+            <button class="btn btn-icon btn-toggle" id="mirrorBtn" onclick="toggleMirror()" title="Toggle Mirror">
+                <span>🔄</span>
+            </button>
+            <button class="btn btn-icon btn-secondary" onclick="downloadSnapshot()" title="Download Image">
+                <span>💾</span>
+            </button>
+            <button class="btn btn-icon btn-secondary" onclick="toggleFullscreen()" title="Fullscreen">
+                <span>⛶</span>
+            </button>
+        </div>
+        
+        <div class="output-box">
+            <div class="output-label">Translated Text</div>
+            <p id="prediction">Starting...</p>
+        </div>
+        <div class="status" id="status">
+            <span class="status-dot" style="display:none;" id="statusDot"></span>
+            <span id="statusText">Click Start to begin</span>
+        </div>
+    </div>
+
+    <div class="guides">
+        <div class="guide-item">✋ Hello / Stop</div>
+        <div class="guide-item">✊ Fist / Rock</div>
+        <div class="guide-item">✌️ Peace</div>
+        <div class="guide-item">🤟 I Love You</div>
+        <div class="guide-item">👆 One</div>
+        <div class="guide-item">🤙 Call Me</div>
+    </div>
+
+    <script>
+        const video = document.getElementById('videoElement');
+        const canvas = document.getElementById('canvasElement');
+        const context = canvas.getContext('2d');
+        const predictionText = document.getElementById('prediction');
+        const statusText = document.getElementById('statusText');
+        const statusDot = document.getElementById('statusDot');
+        const recordingIndicator = document.getElementById('recordingIndicator');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const flashEffect = document.getElementById('flashEffect');
+        
+        let isProcessing = false;
+        let isCameraActive = false;
+        let processingInterval = null;
+        let isMirrored = true;
+
+        // Toggle Camera
+        async function toggleCamera() {
+            if (!isCameraActive) {
+                await setupCamera();
+            } else {
+                stopCamera();
+            }
+        }
+
+        // Start Webcam
+        async function setupCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480 } 
+                });
+                video.srcObject = stream;
+                isCameraActive = true;
+                
+                statusText.innerText = "Camera Active. Processing gestures...";
+                statusDot.style.display = 'block';
+                recordingIndicator.classList.add('active');
+                
+                startBtn.style.display = 'none';
+                stopBtn.style.display = 'inline-block';
+                
+                startProcessing();
+            } catch (err) {
+                console.error("Error accessing webcam:", err);
+                statusText.innerText = "Error: Could not access webcam. Please allow permissions.";
+                alert("Camera access denied. Please enable camera permissions.");
+            }
+        }
+
+        // Stop Camera
+        function stopCamera() {
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            
+            if (processingInterval) {
+                clearInterval(processingInterval);
+            }
+            
+            isCameraActive = false;
+            statusText.innerText = "Camera stopped";
+            statusDot.style.display = 'none';
+            recordingIndicator.classList.remove('active');
+            
+            startBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+            
+            predictionText.innerText = "Stopped";
+        }
+
+        // Capture Frame and Send to Python
+        async function sendFrame() {
+            if (isProcessing || !isCameraActive) return;
+            isProcessing = true;
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const dataURL = canvas.toDataURL('image/jpeg', 0.5);
+
+            try {
+                const response = await fetch('/process_frame', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: dataURL })
+                });
+
+                const data = await response.json();
+                predictionText.innerText = data.prediction || "No gesture detected";
+            } catch (error) {
+                console.error("Error sending frame:", error);
+                predictionText.innerText = "Connection error";
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        // Start Processing Loop
+        function startProcessing() {
+            processingInterval = setInterval(sendFrame, 200);
+        }
+
+        // Capture Snapshot
+        function captureSnapshot() {
+            if (!isCameraActive) {
+                alert("Please start the camera first!");
+                return;
+            }
+            
+            // Flash effect
+            flashEffect.classList.add('active');
+            setTimeout(() => flashEffect.classList.remove('active'), 300);
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Optional: Show preview or download
+            console.log("Snapshot captured!");
+        }
+
+        // Download Snapshot
+        function downloadSnapshot() {
+            if (!isCameraActive) {
+                alert("Please start the camera first!");
+                return;
+            }
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const link = document.createElement('a');
+            link.download = `sign-language-${Date.now()}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg');
+            link.click();
+        }
+
+        // Toggle Mirror Effect
+        function toggleMirror() {
+            isMirrored = !isMirrored;
+            video.style.transform = isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
+            
+            const mirrorBtn = document.getElementById('mirrorBtn');
+            mirrorBtn.classList.toggle('active');
+        }
+
+        // Clear Prediction
+        function clearPrediction() {
+            predictionText.innerText = isCameraActive ? "Waiting..." : "Stopped";
+        }
+
+        // Toggle Fullscreen
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Auto-start (optional - comment out if you want manual start)
+        // setupCamera();
+    </script>
+</body>
+</html>
