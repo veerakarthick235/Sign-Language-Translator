@@ -1,151 +1,103 @@
-AI Sign Language Translator
+# AI Sign Language Translator
 
-A real-time hand gesture recognition system built with Python (Flask), OpenCV, MediaPipe, and HTML/JS. This application uses computer vision to detect hand landmarks via a webcam and translates them into text based on geometric rules.
+A real-time hand gesture recognition system built using **Python (Flask)**, **OpenCV**, **MediaPipe**, and a lightweight **HTML/JS frontend**.  
+The application captures webcam frames, detects hand landmarks, and translates them into text-based gesture predictions.
 
-📂 Project Structure
+## 📌 Features
 
+- Real-time webcam-based hand tracking  
+- MediaPipe-powered 21-point hand landmark detection  
+- Heuristic gesture classification for common static signs  
+- Flask backend API (`/predict`)  
+- Browser-based interface with automatic frame streaming  
+- Low-latency communication using base64 frames (AJAX)
+
+## 📂 Project Structure
+
+```
 sign-language-app/
-├── app.py                 # Flask backend server & Computer Vision logic
-├── requirements.txt       # Python dependencies
+├── app.py                 # Flask backend + MediaPipe logic
+├── requirements.txt       # Dependencies
 ├── README.md              # Documentation
 └── templates/
-    └── index.html         # Frontend UI (Camera & Results)
+    └── index.html         # Frontend UI with webcam handling
+```
 
+## 🚀 Requirements
 
-🚀 Prerequisites
+- Python **3.7+**
+- A working **webcam**
+- pip (Python package manager)
 
-Python 3.7+ installed on your machine.
+## 🛠️ Installation
 
-A working Webcam.
+1. Download or clone the project folder.  
+2. Open a terminal in the project directory.  
+3. Install dependencies:
 
-🛠️ Installation & Setup
-
-Clone or Download this repository/folder.
-
-Open your terminal or command prompt in the project folder.
-
-Install Dependencies:
-
+```
 pip install -r requirements.txt
+```
 
+## ▶️ Running the Application
 
-▶️ How to Run
+Start the Flask server:
 
-Start the Backend Server:
-Run the following command in your terminal:
-
+```
 python app.py
+```
 
+If successful, you will see:
 
-You should see output indicating the server is running on http://127.0.0.1:5000.
+```
+Running on http://127.0.0.1:5000
+```
 
-Open the Application:
-Open your web browser (Chrome/Firefox recommended) and navigate to:
+Open the application in your browser:
+
+```
 http://127.0.0.1:5000
+```
 
-Grant Permissions:
-Allow the browser to access your webcam when prompted.
+Allow camera access when prompted.
 
-✋ Supported Gestures
+## ✋ Supported Gestures (Heuristic-Based)
 
-The system currently recognizes the following static gestures:
+| Gesture      | Meaning       | Pattern Description                     |
+|--------------|--------------|------------------------------------------|
+| Open Palm    | Hello/Stop   | All 5 fingers open                       |
+| Fist         | Fist/Rock    | All fingers curled                       |
+| V Sign       | Peace        | Index & Middle up                        |
+| I Love You   | Spider-Man   | Thumb, Index & Pinky up                  |
+| Index Up     | One          | Only index finger up                     |
+| Shaka        | Call Me      | Thumb & Pinky up                         |
+| Thumb Up     | Like         | Thumb up, others curled                  |
+| Rock On      | Rock Gesture | Index & Pinky up                         |
+| Three        | Number 3     | Index, Middle, Ring up                   |
+| Four         | Number 4     | All except Thumb                         |
 
-Gesture
+## ❓ Troubleshooting
 
-Action/Meaning
+### Backend Disconnected
+- Ensure `python app.py` is running  
+- Confirm `http://127.0.0.1:5000` is correct  
 
-Description
+### Camera Not Working
+- Close other camera apps  
+- Refresh page  
+- Allow camera permissions  
 
-Open Palm
+### Jittery or Inaccurate Detection
+- Improve lighting  
+- Keep hand centered  
+- Maintain moderate distance  
 
-Hello / Stop
+## 🔧 Technologies Used
 
-All 5 fingers open
+- Flask  
+- MediaPipe  
+- OpenCV  
+- JavaScript  
 
-Fist
-
-Fist / Rock
-
-All fingers curled
-
-V Sign
-
-Peace
-
-Index & Middle fingers up
-
-Spider-Man
-
-I Love You
-
-Thumb, Index & Pinky up
-
-Index Up
-
-One
-
-Only Index finger up
-
-Shaka
-
-Call Me
-
-Thumb & Pinky up
-
-Thumb Up
-
-Thumbs Up
-
-Thumb out, others curled
-
-Rock On
-
-Rock On
-
-Index & Pinky up
-
-Three
-
-Three
-
-Index, Middle, Ring up
-
-Four
-
-Four
-
-All fingers up except Thumb
-
-❓ Troubleshooting
-
-"Backend Disconnected" / "Offline"
-
-Ensure the terminal running python app.py is still open and hasn't crashed.
-
-Ensure you are accessing the site via http://127.0.0.1:5000.
-
-Camera not working
-
-Check if another application (Zoom, Teams) is using the camera.
-
-Ensure you clicked "Allow" on the browser permission popup.
-
-Try refreshing the page.
-
-Detection is jittery or inaccurate
-
-Ensure your hand is well-lit.
-
-Keep your hand within the frame.
-
-The logic currently assumes the right hand for specific thumb orientation checks, but works generally for both hands for vertical finger counts.
-
-🔧 Technologies Used
-
-Flask: Web framework for serving the app and API.
-
-MediaPipe: Google's ML framework for hand tracking.
-
-OpenCV: Image processing.
-
-JavaScript (Fetch API): Sending video frames to the server asynchronously.
+## 📌 Notes
+Gesture detection uses rule-based heuristics; accuracy can be improved with a trained ML model.
