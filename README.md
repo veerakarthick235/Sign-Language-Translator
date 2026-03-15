@@ -98,6 +98,3 @@ Allow camera access when prompted.
 - MediaPipe  
 - OpenCV  
 - JavaScript  
-
-## 📌 Notes
-Gesture detection uses rule-based heuristics; accuracy can be improved with a trained ML model.
