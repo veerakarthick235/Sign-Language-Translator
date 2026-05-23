@@ -1,100 +1,101 @@
-# AI Sign Language Translator
+# AI Sign Language Translator — SignLens
 
-A real-time hand gesture recognition system built using **Python (Flask)**, **OpenCV**, **MediaPipe**, and a lightweight **HTML/JS frontend**.  
-The application captures webcam frames, detects hand landmarks, and translates them into text-based gesture predictions.
+A **SaaS-level** real-time hand gesture recognition web app built with **Python (Flask)**, **OpenCV**, **MediaPipe**, and a premium **HTML/CSS/JS** frontend.
 
-## 📌 Features
+## ✨ Features
 
-- Real-time webcam-based hand tracking  
-- MediaPipe-powered 21-point hand landmark detection  
-- Heuristic gesture classification for common static signs  
-- Flask backend API (`/predict`)  
-- Browser-based interface with automatic frame streaming  
-- Low-latency communication using base64 frames (AJAX)
+- 🚀 **Premium Landing Page** with animated hero, feature cards, and CTA
+- ✋ **Real-Time AI Detection** — MediaPipe 21-point hand landmark model
+- 🎯 **14+ Gestures** with confidence scoring (High / Medium / Low)
+- 🔊 **Text-to-Speech** — detected gestures spoken aloud via Web Speech API
+- 📊 **Analytics Dashboard** — session stats, gesture frequency chart, session timer
+- 🕐 **Translation History** — last 20 translations tracked per session
+- 📚 **Gesture Library** — filterable visual guide for all supported signs
+- ⌨️ **Keyboard Shortcuts** — Space, S, M, T, F
+- 💾 **Snapshot Download** — save camera frames with flash effect
+- 🔒 **100% Private** — all processing local, no data leaves your device
 
 ## 📂 Project Structure
 
 ```
-sign-language-app/
-├── app.py                 # Flask backend + MediaPipe logic
-├── requirements.txt       # Dependencies
-├── README.md              # Documentation
+Sign-Language-Translator/
+├── app.py                  # Flask backend + MediaPipe logic
+├── requirements.txt        # Dependencies
+├── README.md
+├── static/
+│   ├── css/
+│   │   ├── main.css        # Global design system (tokens, navbar, buttons)
+│   │   ├── landing.css     # Landing page styles
+│   │   └── app.css         # Translator app & gesture library styles
+│   ├── js/
+│   │   ├── app.js          # Camera, TTS, keyboard shortcuts, history
+│   │   └── analytics.js    # Frequency tracking & chart rendering
+│   └── img/
+│       └── hero-bg.png     # AI-generated hero background
 └── templates/
-    └── index.html         # Frontend UI with webcam handling
+    ├── base.html           # Shared Jinja2 layout (nav, footer)
+    ├── index.html          # Landing page
+    ├── app.html            # Main translator app
+    └── gestures.html       # Gesture library
 ```
 
-## 🚀 Requirements
+## 🚀 Quick Start
 
-- Python **3.7+**
-- A working **webcam**
-- pip (Python package manager)
-
-## 🛠️ Installation
-
-1. Download or clone the project folder.  
-2. Open a terminal in the project directory.  
-3. Install dependencies:
-
-```
+```bash
+# 1. Install dependencies
 pip install -r requirements.txt
-```
 
-## ▶️ Running the Application
-
-Start the Flask server:
-
-```
+# 2. Run the server
 python app.py
+
+# 3. Open in browser
+http://localhost:5000
 ```
 
-If successful, you will see:
+## 🌐 Pages
 
-```
-Running on http://127.0.0.1:5000
-```
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page with hero, features, demo |
+| `/app` | Main real-time translator |
+| `/gestures` | Visual gesture library (filterable) |
+| `/api/gestures` | JSON API — full gesture list |
+| `/history` | JSON API — session translation history |
+| `/process_frame` | POST — process webcam frame |
 
-Open the application in your browser:
+## ✋ Supported Gestures
 
-```
-http://127.0.0.1:5000
-```
+| Gesture | Emoji | Category |
+|---------|-------|----------|
+| Hello / Stop | ✋ | Common |
+| Fist / Rock | ✊ | Common |
+| Peace | ✌️ | Common |
+| I Love You | 🤟 | Emotional |
+| One | ☝️ | Numbers |
+| Two | ✌️ | Numbers |
+| Three | 🤟 | Numbers |
+| Four | 🖖 | Numbers |
+| Call Me | 🤙 | Common |
+| Thumbs Up | 👍 | Emotional |
+| Thumbs Down | 👎 | Emotional |
+| Point / Gun | 👆 | Common |
+| OK | 👌 | Common |
+| Rock On | 🤘 | Common |
 
-Allow camera access when prompted.
+## ⌨️ Keyboard Shortcuts
 
-## ✋ Supported Gestures (Heuristic-Based)
+| Key | Action |
+|-----|--------|
+| `Space` | Start / Stop camera |
+| `S` | Save snapshot |
+| `M` | Toggle mirror |
+| `T` | Toggle voice (TTS) |
+| `F` | Toggle fullscreen |
 
-| Gesture      | Meaning       | Pattern Description                     |
-|--------------|--------------|------------------------------------------|
-| Open Palm    | Hello/Stop   | All 5 fingers open                       |
-| Fist         | Fist/Rock    | All fingers curled                       |
-| V Sign       | Peace        | Index & Middle up                        |
-| I Love You   | Spider-Man   | Thumb, Index & Pinky up                  |
-| Index Up     | One          | Only index finger up                     |
-| Shaka        | Call Me      | Thumb & Pinky up                         |
-| Thumb Up     | Like         | Thumb up, others curled                  |
-| Rock On      | Rock Gesture | Index & Pinky up                         |
-| Three        | Number 3     | Index, Middle, Ring up                   |
-| Four         | Number 4     | All except Thumb                         |
+## 🔧 Technologies
 
-## ❓ Troubleshooting
-
-### Backend Disconnected
-- Ensure `python app.py` is running  
-- Confirm `http://127.0.0.1:5000` is correct  
-
-### Camera Not Working
-- Close other camera apps  
-- Refresh page  
-- Allow camera permissions  
-
-### Jittery or Inaccurate Detection
-- Improve lighting  
-- Keep hand centered  
-- Maintain moderate distance  
-
-## 🔧 Technologies Used
-
-- Flask  
-- MediaPipe  
-- OpenCV  
-- JavaScript  
+- **Backend**: Flask, Flask-CORS, Flask-Session
+- **AI**: MediaPipe Hands, OpenCV, NumPy
+- **Frontend**: Vanilla HTML5/CSS3/JavaScript
+- **Fonts**: Google Fonts (Inter, Space Grotesk)
+- **Voice**: Web Speech API (browser native)

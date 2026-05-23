@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ description | default('SignLens — AI-powered real-time sign language translation in your browser.') }}">
+  <title>{% block title %}SignLens — AI Sign Language Translator{% endblock %}</title>
+
+  <!-- Preconnect for fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Global CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  {% block extra_css %}{% endblock %}
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✋</text></svg>">
+</head>
+<body>
+
+  <!-- ══ Navigation ══ -->
+  <nav class="navbar" id="navbar">
+    <a href="/" class="nav-logo">
+      <span class="logo-icon">✋</span>
+      <span>Sign<span class="logo-accent">Lens</span></span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/" id="nav-home">Home</a></li>
+      <li><a href="/app" id="nav-app">Translator</a></li>
+      <li><a href="/gestures" id="nav-gestures">Gesture Library</a></li>
+    </ul>
+
+    <a href="/app" class="nav-cta">Launch App →</a>
+  </nav>
+
+  <!-- ══ Page Content ══ -->
+  {% block content %}{% endblock %}
+
+  <!-- ══ Footer ══ -->
+  <footer class="footer">
+    <div>
+      <strong>Sign<span style="color: var(--clr-primary-lt)">Lens</span></strong> &nbsp;·&nbsp;
+      AI-powered sign language translation
+    </div>
+    <div style="display:flex; gap: 20px;">
+      <a href="/">Home</a>
+      <a href="/app">Translator</a>
+      <a href="/gestures">Gestures</a>
+      <a href="/api/gestures">API</a>
+    </div>
+    <div>Built with ❤️ using Flask + MediaPipe</div>
+  </footer>
+
+  <!-- ══ Navbar scroll effect ══ -->
+  <script>
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+    // Active link
+    const path = window.location.pathname;
+    const navMap = { '/': 'nav-home', '/app': 'nav-app', '/gestures': 'nav-gestures' };
+    const activeId = navMap[path];
+    if (activeId) {
+      const el = document.getElementById(activeId);
+      if (el) el.classList.add('active');
+    }
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

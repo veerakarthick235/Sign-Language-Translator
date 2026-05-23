@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Gesture Library — SignLens{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="gestures-page">
+
+  <!-- ══ Header ════════════════════════════════════════════════ -->
+  <div class="gestures-header">
+    <span style="display:inline-block; font-size:0.75rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color: var(--clr-primary-lt); margin-bottom: 12px;">
+      Complete Reference
+    </span>
+    <h1>✋ Gesture <span class="gradient-text">Library</span></h1>
+    <p>All {{ gestures|length }} hand signs recognized by SignLens AI — with finger patterns and categories.</p>
+    <div style="margin-top: 20px;">
+      <a href="/app" class="btn btn-primary">🚀 Open Translator</a>
+    </div>
+  </div>
+
+  <!-- ══ Category Filter ════════════════════════════════════════ -->
+  <div class="category-filter">
+    <button class="filter-btn active" data-filter="All" onclick="filterGestures(this, 'All')">All</button>
+    <button class="filter-btn" data-filter="Common" onclick="filterGestures(this, 'Common')">Common</button>
+    <button class="filter-btn" data-filter="Numbers" onclick="filterGestures(this, 'Numbers')">Numbers</button>
+    <button class="filter-btn" data-filter="Emotional" onclick="filterGestures(this, 'Emotional')">Emotional</button>
+  </div>
+
+  <!-- ══ Gesture Grid ═══════════════════════════════════════════ -->
+  <div class="gesture-grid" id="gesture-grid">
+    {% for gesture in gestures %}
+    <div class="gesture-card" data-category="{{ gesture.category }}">
+      <span class="gesture-emoji" style="animation-delay: {{ loop.index0 * 0.15 }}s">{{ gesture.emoji }}</span>
+      <div class="gesture-name">{{ gesture.name }}</div>
+      <div class="gesture-pattern">{{ gesture.pattern }}</div>
+      <span class="gesture-category-tag">{{ gesture.category }}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let currentFilter = 'All';
+
+  function filterGestures(btn, category) {
+    currentFilter = category;
+
+    // Update active button
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Filter cards
+    document.querySelectorAll('.gesture-card').forEach(card => {
+      const match = category === 'All' || card.dataset.category === category;
+      card.style.display = match ? '' : 'none';
+      if (match) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 30);
+      }
+    });
+  }
+
+  // Intersection observer for initial card entrance
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }, 50);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.gesture-card').forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(30px)';
+    card.style.transition = `opacity 0.5s ease ${i * 0.04}s, transform 0.5s ease ${i * 0.04}s`;
+    observer.observe(card);
+  });
+</script>
+{% endblock %}
